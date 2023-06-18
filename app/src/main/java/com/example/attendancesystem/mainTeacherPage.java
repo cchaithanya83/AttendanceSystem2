@@ -76,7 +76,7 @@ public class mainTeacherPage extends AppCompatActivity  {
                 // Add your logic here to navigate to the view student page
 
                 // Display a toast message
-                Intent intent=new Intent(mainTeacherPage.this,attendace_veiwer.class);
+                Intent intent=new Intent(mainTeacherPage.this,view_student.class);
                 startActivity(intent);
                 Toast.makeText(mainTeacherPage.this, "View Student Clicked", Toast.LENGTH_SHORT).show();
             }

@@ -1,8 +1,10 @@
 package com.example.attendancesystem;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,20 +19,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.security.auth.Subject;
 
 public class view_student extends AppCompatActivity {
 
+    private String[] subject = new String[]{"OOC", "ADE", "ML", "JAVA", "DIP"};
     private Button viewStudentsButton;
     private RecyclerView recyclerViewSubjects;
     private TextView tvNoSubjects;
 
     private FirebaseFirestore db;
-    private CollectionReference subjectsCollection;
+    private CollectionReference studentsCollection;
     private List<Subject> subjectList;
     private SubjectAdapter subjectAdapter;
 
@@ -40,7 +39,7 @@ public class view_student extends AppCompatActivity {
         setContentView(R.layout.activity_view_student);
 
         db = FirebaseFirestore.getInstance();
-        subjectsCollection = db.collection("subjects");
+        studentsCollection = db.collection("students");
 
         viewStudentsButton = findViewById(R.id.btnViewStudents);
         recyclerViewSubjects = findViewById(R.id.recyclerViewStudents);
@@ -50,6 +49,7 @@ public class view_student extends AppCompatActivity {
         recyclerViewSubjects.setLayoutManager(new LinearLayoutManager(this));
         subjectList = new ArrayList<>();
         subjectAdapter = new SubjectAdapter(subjectList);
+
         recyclerViewSubjects.setAdapter(subjectAdapter);
 
         // Set click listener for View Students button
@@ -64,13 +64,12 @@ public class view_student extends AppCompatActivity {
     private void fetchSubjects() {
         subjectList.clear();
 
-        subjectsCollection
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            String subjectName = documentSnapshot.getId();
+        for (String subjectName : subject) {
+            studentsCollection.document(subjectName)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
                             List<String> studentNames = new ArrayList<>();
 
                             // Retrieve the list of student names for the subject
@@ -91,29 +90,27 @@ public class view_student extends AppCompatActivity {
                                 subjectList.add(subject);
                                 subjectAdapter.notifyDataSetChanged();
                             }
-                        }
 
-                        if (subjectList.isEmpty()) {
-                            recyclerViewSubjects.setVisibility(View.GONE);
-                            tvNoSubjects.setVisibility(View.VISIBLE);
-                        } else {
-                            recyclerViewSubjects.setVisibility(View.VISIBLE);
-                            tvNoSubjects.setVisibility(View.GONE);
+                            if (subjectList.isEmpty()) {
+                                recyclerViewSubjects.setVisibility(View.GONE);
+                                tvNoSubjects.setVisibility(View.VISIBLE);
+                            } else {
+                                recyclerViewSubjects.setVisibility(View.VISIBLE);
+                                tvNoSubjects.setVisibility(View.GONE);
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(view_student.this, "Failed to fetch subjects", Toast.LENGTH_SHORT).show();
-                        // Handle error while fetching subjects
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(view_student.this, "Failed to fetch subjects", Toast.LENGTH_SHORT).show();
+                            // Handle error while fetching subjects
+                        }
+                    });
+        }
     }
 
     private void fetchStudentNames(List<String> studentIds, List<String> studentNames, FetchStudentNamesCallback callback) {
-        CollectionReference studentsCollection = db.collection("students");
-
         for (String studentId : studentIds) {
             studentsCollection.document(studentId)
                     .get()
@@ -143,5 +140,3 @@ public class view_student extends AppCompatActivity {
         void onStudentNamesFetched();
     }
 }
-
-

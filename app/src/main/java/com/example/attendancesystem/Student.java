@@ -1,4 +1,5 @@
 package com.example.attendancesystem;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +12,12 @@ public class Student {
     private String email;
     private int semester;
     private String studentClass;
-    UniqueListExample example = new UniqueListExample();
+    private UniqueListExample example;
 
     // Empty constructor (required for Firebase Firestore)
     public Student() {
+        example = new UniqueListExample();
     }
-
 
     // Constructor to initialize the student object
     public Student(String username, String usn, String subject, String email, int semester, String studentClass) {
@@ -26,13 +27,8 @@ public class Student {
         this.email = email;
         this.semester = semester;
         this.studentClass = studentClass;
-
-
+        this.example = new UniqueListExample();
         example.addItem(subject);
-
-
-        List<String> resultList = example.getUniqueList();
-
     }
 
     // Getters and setters for the student's attributes
@@ -83,6 +79,7 @@ public class Student {
     public void setStudentClass(String studentClass) {
         this.studentClass = studentClass;
     }
+
     public class UniqueListExample {
         private List<String> uniqueList;
         private Set<String> uniqueSet;
@@ -102,5 +99,5 @@ public class Student {
         public List<String> getUniqueList() {
             return uniqueList;
         }
+    }
 }
-

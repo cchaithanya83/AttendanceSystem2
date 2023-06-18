@@ -6,16 +6,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.attendancesystem.R;
-import com.example.attendancesystem.Student;
-
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -65,17 +62,12 @@ public class addStudent extends AppCompatActivity {
 
                 // Create a Student object
                 Student student = new Student(username, usn, subject, email, semester, studentClass);
-                String id=email+"$"+subject;
 
                 // Add the student to the database
-
-                studentsCollection = db.collection(subject);
-
-
-                studentsCollection.document().collection(email).add(student)
+                db.collection(subject).document(email).set(student)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(Void aVoid) {
+                            public void onSuccess(Void aVoid)  {
                                 // Display a toast message to indicate successful addition
                                 String message = "Student added!\nUsername: " + username + "\nUSN: " + usn +
                                         "\nSubject: " + subject + "\nEmail: " + email +
@@ -87,7 +79,6 @@ public class addStudent extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // Display a toast message to indicate failure
-
                                 Toast.makeText(addStudent.this, "Failed to add student", Toast.LENGTH_SHORT).show();
                             }
                         });
