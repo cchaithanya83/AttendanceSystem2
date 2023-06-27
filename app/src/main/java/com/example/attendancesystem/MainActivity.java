@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start TeacherLoginActivity
-                Intent intent = new Intent(MainActivity.this,teacher_login.class);
+                Intent intent = new Intent(MainActivity.this,mainTeacherPage.class);
                 startActivity(intent);
 
                 // Display a toast message

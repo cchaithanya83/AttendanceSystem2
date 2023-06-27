@@ -57,14 +57,14 @@ public class addStudent extends AppCompatActivity {
                 String usn = usnEditText.getText().toString();
                 String subject = subjectEditText.getText().toString();
                 String email = emailEditText.getText().toString();
-                int semester = Integer.parseInt(semesterEditText.getText().toString());
+                String semester = semesterEditText.getText().toString();
                 String studentClass = classEditText.getText().toString();
 
                 // Create a Student object
                 Student student = new Student(username, usn, subject, email, semester, studentClass);
 
                 // Add the student to the database
-                db.collection(subject).document(email).set(student)
+                db.collection("Student").document(email).set(student)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid)  {

@@ -45,8 +45,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectV
 
         public SubjectViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvSubjectName = itemView.findViewById(R.id.tvStudentName);
-            tvStudentNames = itemView.findViewById(R.id.tvNoStudents);
+            tvSubjectName = itemView.findViewById(R.id.username);
+            tvStudentNames = itemView.findViewById(R.id.usn);
         }
 
         public void bind(Subject subject) {

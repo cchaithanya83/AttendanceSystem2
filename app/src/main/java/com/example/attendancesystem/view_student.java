@@ -1,7 +1,11 @@
 package com.example.attendancesystem;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,120 +29,98 @@ import java.util.List;
 
 public class view_student extends AppCompatActivity {
 
-    private String[] subject = new String[]{"OOC", "ADE", "ML", "JAVA", "DIP"};
-    private Button viewStudentsButton;
-    private RecyclerView recyclerViewSubjects;
-    private TextView tvNoSubjects;
+    private RecyclerView recyclerView;
+    private FirestoreAdapter adapter;
 
     private FirebaseFirestore db;
-    private CollectionReference studentsCollection;
-    private List<Subject> subjectList;
-    private SubjectAdapter subjectAdapter;
+    private CollectionReference collectionRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_student);
 
+        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
-        studentsCollection = db.collection("students");
+        collectionRef = db.collection("Student"); // Replace with your collection name
 
-        viewStudentsButton = findViewById(R.id.btnViewStudents);
-        recyclerViewSubjects = findViewById(R.id.recyclerViewStudents);
-        tvNoSubjects = findViewById(R.id.tvNoStudents);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new FirestoreAdapter();
+        recyclerView.setAdapter(adapter);
 
-        // Set up the RecyclerView
-        recyclerViewSubjects.setLayoutManager(new LinearLayoutManager(this));
-        subjectList = new ArrayList<>();
-        subjectAdapter = new SubjectAdapter(subjectList);
+        // Fetch data from Firestore
+        fetchDataFromFirestore();
+    }
 
-        recyclerViewSubjects.setAdapter(subjectAdapter);
-
-        // Set click listener for View Students button
-        viewStudentsButton.setOnClickListener(new View.OnClickListener() {
+    private void fetchDataFromFirestore() {
+        collectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onClick(View v) {
-                fetchSubjects();
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(view_student.this, "sucess", Toast.LENGTH_SHORT).show();
+                    List<YourModelClass> data = new ArrayList<>();
+                    for (DocumentSnapshot document : task.getResult()) {
+                        // Assuming you have a custom model class to represent your data
+                        YourModelClass model = document.toObject(YourModelClass.class);
+                        data.add(model);
+                    }
+                    adapter.setData(data);
+
+                } else {
+                    Log.d("Firestore", "Error getting documents: " + task.getException());
+                }
             }
         });
     }
 
-    private void fetchSubjects() {
-        subjectList.clear();
+    private static class FirestoreAdapter extends RecyclerView.Adapter<FirestoreAdapter.ViewHolder> {
+        private List<YourModelClass> data = new ArrayList<>();
 
-        for (String subjectName : subject) {
-            studentsCollection.document(subjectName)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            List<String> studentNames = new ArrayList<>();
+        public void setData(List<YourModelClass> data) {
+            this.data = data;
+            notifyDataSetChanged();
+        }
 
-                            // Retrieve the list of student names for the subject
-                            List<String> studentIds = (List<String>) documentSnapshot.get("students");
-                            if (studentIds != null) {
-                                fetchStudentNames(studentIds, studentNames, new FetchStudentNamesCallback() {
-                                    @Override
-                                    public void onStudentNamesFetched() {
-                                        // Create a Subject object with subject name and student names
-                                        Subject subject = new Subject(subjectName, studentNames);
-                                        subjectList.add(subject);
-                                        subjectAdapter.notifyDataSetChanged();
-                                    }
-                                });
-                            } else {
-                                // Create a Subject object with subject name and an empty student names list
-                                Subject subject = new Subject(subjectName, studentNames);
-                                subjectList.add(subject);
-                                subjectAdapter.notifyDataSetChanged();
-                            }
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student, parent, false);
+            return new ViewHolder(view);
+        }
 
-                            if (subjectList.isEmpty()) {
-                                recyclerViewSubjects.setVisibility(View.GONE);
-                                tvNoSubjects.setVisibility(View.VISIBLE);
-                            } else {
-                                recyclerViewSubjects.setVisibility(View.VISIBLE);
-                                tvNoSubjects.setVisibility(View.GONE);
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(view_student.this, "Failed to fetch subjects", Toast.LENGTH_SHORT).show();
-                            // Handle error while fetching subjects
-                        }
-                    });
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            YourModelClass item = data.get(position);
+            holder.username.setText(item.getUsername());
+
+
+            holder.usn.setText(item.getusn());
+            holder.semester.setText(item.getSemester());
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+
+        public static class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView username;
+            public TextView usn;
+            public TextView semester;
+
+
+
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                username = itemView.findViewById(R.id.username);
+                usn = itemView.findViewById(R.id.usn);
+                semester = itemView.findViewById(R.id.semester);
+
+            }
         }
     }
 
-    private void fetchStudentNames(List<String> studentIds, List<String> studentNames, FetchStudentNamesCallback callback) {
-        for (String studentId : studentIds) {
-            studentsCollection.document(studentId)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            String studentName = documentSnapshot.getString("username");
-                            studentNames.add(studentName);
-
-                            // Check if all student names have been fetched
-                            if (studentNames.size() == studentIds.size()) {
-                                callback.onStudentNamesFetched();
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(view_student.this, "Failed to fetch student names", Toast.LENGTH_SHORT).show();
-                            // Handle error while fetching student names
-                        }
-                    });
-        }
-    }
-
-    private interface FetchStudentNamesCallback {
-        void onStudentNamesFetched();
-    }
 }

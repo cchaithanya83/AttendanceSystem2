@@ -6,47 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".ViewStudentActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Students"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp" />
-
-    <Spinner
-        android:id="@+id/spinnerClass"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:minHeight="48dp" />
-
-    <Button
-        android:id="@+id/btnViewStudents"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View Students"
-        android:layout_marginTop="16dp" />
-
+    tools:context=".view_student">
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewStudents"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    <TextView
-        android:id="@+id/tvNoStudents"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="No students found."
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:visibility="gone" />
-
+        android:layout_height="match_parent" />
 </LinearLayout>

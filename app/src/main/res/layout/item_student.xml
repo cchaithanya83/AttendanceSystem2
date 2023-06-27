@@ -5,25 +5,25 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvStudentName"
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:padding="8dp" />
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvStudentRollNumber"
+        android:id="@+id/usn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:padding="8dp" />
 
     <TextView
-        android:id="@+id/tvStudentSemester"
+        android:id="@+id/semester"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:textSize="16sp" />
 
 </LinearLayout>

@@ -10,7 +10,7 @@ public class Student {
     private String usn;
     private String subject;
     private String email;
-    private int semester;
+    private String semester;
     private String studentClass;
     private UniqueListExample example;
 
@@ -20,7 +20,7 @@ public class Student {
     }
 
     // Constructor to initialize the student object
-    public Student(String username, String usn, String subject, String email, int semester, String studentClass) {
+    public Student(String username, String usn, String subject, String email, String semester, String studentClass) {
         this.username = username;
         this.usn = usn;
         this.subject = subject;
@@ -64,11 +64,11 @@ public class Student {
         this.email = email;
     }
 
-    public int getSemester() {
+    public String getSemester() {
         return semester;
     }
 
-    public void setSemester(int semester) {
+    public void setSemester(String semester) {
         this.semester = semester;
     }
 
